@@ -11,4 +11,4 @@ This plugin for esoTalk simple adds Google Analytics to your forum.
 
 ### Screenshot
 ---------------------------------------
-![Screenshot](http://666kb.com/i/cj63llkpu49hkvt3x.png)
+![Screenshot](http://666kb.com/i/cj63z92zoxppnsmql.png)
