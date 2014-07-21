@@ -5,11 +5,12 @@ if (!defined("IN_ESOTALK")) exit;
 ET::$pluginInfo["GoogleAnalytics"] = array(
 	"name" => "Google Analytics",
 	"description" => "Adds Google Analytics.",
-	"version" => "0.1",
+	"version" => "0.2",
 	"author" => "ciruz",
 	"authorEmail" => "me@ciruz.net",
 	"authorURL" => "http://www.ciruz.net",
-	"license" => "MIT"
+	"license" => "MIT",
+	"dependencies" => array("esoTalk" => "1.0.0g4")
 );
 
 class ETPlugin_GoogleAnalytics extends ETPlugin{
@@ -18,28 +19,30 @@ class ETPlugin_GoogleAnalytics extends ETPlugin{
 		$propertyId = C('plugin.GoogleAnalytics.propertyId');
 
 		if($propertyId)
-			$analyticsCode = "<script type=\"text/javascript\">\n var _gaq = _gaq || [];\n _gaq.push(['_setAccount', '".$propertyId."']);\n _gaq.push(['_trackPageview']);\n (function() { \n  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; \n  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n })();\n</script>";
+			$analyticsCode = "<script>\n (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n })(window,document,'script','//www.google-analytics.com/analytics.js','ga');\n\n ga('create', '".$propertyId."', 'auto');\n ga('send', 'pageview');\n</script>";
 
 		$sender->addToHead($analyticsCode);
 	}
 
 	public function settings($sender){
 		$form = ETFactory::make('form');
-		$form->action = URL('admin/plugins');
+		$form->action = URL('admin/plugins/settings/GoogleAnalytics');
 		$form->setValue("propertyId", C("plugin.GoogleAnalytics.propertyId"));
 
 		if ($form->validPostBack('GoogleAnalyticsSave')){
 			$config = array();
 			$config['plugin.GoogleAnalytics.propertyId'] = trim($form->getValue('propertyId'));
 
-			ET::writeConfig($config);
+			if (!$form->errorCount()) {
+				ET::writeConfig($config);
 
-			$sender->message(T('message.changesSaved'), 'success');
-			$sender->redirect(URL('admin/plugins'));
+				$sender->message(T('message.changesSaved'), 'success');
+				$sender->redirect(URL('admin/plugins'));
+			}
 		}
 
 		$sender->data('GoogleAnalyticsForm', $form);
-		return $this->getView('settings');
+		return $this->view('settings');
 	}
 
 }
